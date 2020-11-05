@@ -14,11 +14,13 @@ def get_db_uri(dbinfo):
     odbcname = dbinfo.get("ODBCNAME") or ""
 
     return "{}+{}://{}:{}@{}:{}/{}?driver={}".format(engine, driver, user, password, host, port, dbname, odbcname)
+    # mssql+pyodbc://sa:zss11111111@localhost:58651/测试数据库?driver=ODBC+Driver+13+for+SQL+Server
 
 
 class Config:
     DEBUG = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SECRET_KEY = "darkness"
 
 
 class DevelopConfig(Config):
@@ -29,11 +31,25 @@ class DevelopConfig(Config):
         "PASSWORD": "zss11111111",
         "HOST": "localhost",
         "PORT": "58651",
-        "DBNAME": "测试数据库",
+        "DBNAME": "zss_shenpi",
+        "ODBCNAME": "ODBC+Driver+13+for+SQL+Server"
+    }
+
+    bindinfo = {
+        "ENGINE": "mssql",
+        "DRIVER": "pyodbc",
+        "USER": "sa",
+        "PASSWORD": "zss11111111",
+        "HOST": "localhost",
+        "PORT": "58651",
+        "DBNAME": "zss",
         "ODBCNAME": "ODBC+Driver+13+for+SQL+Server"
     }
 
     SQLALCHEMY_DATABASE_URI = get_db_uri(dbinfo)
+    SQLALCHEMY_BINDS = {
+        'zss': get_db_uri(bindinfo)
+    }
 
 
 class TestConfig(Config):
