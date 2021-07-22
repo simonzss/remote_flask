@@ -7,10 +7,10 @@ from Zss.views import first_blueprint
 
 
 def create_zss_app():
-    app = Flask(__name__)
+    # app = Flask(__name__,static_folder="../static/")
+    app = Flask(__name__,static_folder="../Zss/static/bootstrap/")
     app.register_blueprint(first_blueprint)
     app.config.from_object(envs.get("develop"))
-    # print(app.config)
 
     @app.errorhandler(404)    #用errorhandler处理404错误
     def page_not_found(error):

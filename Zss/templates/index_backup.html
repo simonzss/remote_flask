@@ -1,10 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 
-{% extends "base.html" %}
+    <a class="navbar-brand" href="{{ url_for('zss.login2') }}">首页</a>
 
-{% block content %}
+    <meta charset="UTF-8">
+    <title>模板首页</title>
 
+{#    <style>#}
+{#        table {#}
+{#            border: 1px solid black;#}
+{#        }#}
+{##}
+{#        td {#}
+{#            border: 1px solid black;#}
+{#        }#}
+{#    </style>#}
 
+</head>
+<body>
+<h1 id="demo3">模板首页哈哈哈</h1>
 
+{#<h1 id="demo">{{msg}}</h1>#}
+<h1>{{ aa.name }}</h1>
 <script>
     var ss ={{ msg|tojson|safe }};
     var ss_lastyear ={{ msg_lastyear|tojson|safe }};
@@ -12,71 +34,88 @@
     var querytype = '{{query_type}}';
 
     function create_one_table(ss, querytype, month, year_select) {
-        {#document.write(ss);#}
-        {#document.write(typeof ss);#}
+        document.write(ss);
+        document.write(typeof ss);
+
         {#document.write(ss.西安.工业);#}
         {#ss1 = JSON.parse(ss);#}
-        {#var obj1 = document.getElementById("demo").innerText;#}
-        {#document.write('{{query_type}}');#}
-        {#td.innerHTML = ss1[x]["工业"];#}
-
-
         ss1 = ss;
-
+        document.write(typeof ss1);
+        document.write(ss1.西安.工业);
+        document.write(ss1);
+        document.write('{{query_type}}');
         if (querytype === 'LW') {
             querytype = '联网直报平台存量';
         } else if (querytype === 'SP') {
             querytype = '审批平台增量';
         }
 
-        div = document.createElement("div");
+
+        var b = 'TTTTTTTTTTTTTTTTTTTTTTTTTTTTT';
+        document.write(b);
+
+        {#var obj1 = document.getElementById("demo").innerText;#}
+        {#document.write(typeof obj1);#}
+        {#document.write(obj1);#}
+        {#var obj2 = JSON.parse(obj1);#}
+        {#document.write(typeof obj2);#}
+        {#document.write(obj2);#}
+        {#document.write(b);#}
+        {#document.write(obj2.西安.工业);#}
+        {#document.write(typeof obj2);#}
+
         table = document.createElement("table");
+        table.setAttribute("name", {{year_select}}+month);
+        table.setAttribute("class", "table table-bordered");
+        tr = document.createElement("tr");
+        {#
+        for (i = 0; i < 5; i++) {
+            tr = document.createElement("tr");
+
+            for (j = 0; j < 4; j++) {
+                td = document.createElement("td");
+                tr.appendChild(td);
+                td.innerHTML = "列：" + j + " 行：" + i;
+            }
+            table.appendChild(tr);
+        }
+        #}
+        td = document.createElement("td");
+        td.innerHTML = null;
+        tr.appendChild(td);
+        for (x in ss1["西安"]) {
+            td = document.createElement("td");
+            td.innerHTML = x;
+            tr.appendChild(td);
+        }
+        table.appendChild(tr);
+
+        for (x in ss1) {
+            tr = document.createElement("tr");
+            td = document.createElement("td");
+            td.innerHTML = x;
+            tr.appendChild(td);
+            document.write(ss1[x]);
+            {#td = document.createElement("td");#}
+            {#td.innerHTML = ss1[x]["工业"];#}
+            {#tr.appendChild(td);#}
+            for (t in ss1[x]) {
+                td = document.createElement("td");
+                td.innerHTML = ss1[x][t];
+                tr.appendChild(td);
+            }
+            table.appendChild(tr);
+        }
+
         caption = document.createElement("caption");
-        caption.setAttribute("class", "caption");
         if (month === 'year_report') {
             caption.innerText = querytype + (parseInt(year_select) - 1).toString() + '年报';
         } else {
             caption.innerText = querytype + year_select.toString() + '年' + month;
         }
-        tbody = document.createElement("tbody");
-        tr = document.createElement("tr");
-        th = document.createElement("th");
-        th.setAttribute("class", "td");
-        th.innerHTML = null;
-        tr.appendChild(th);
-        for (x in ss1["西安"]) {
-            th = document.createElement("th");
-            th.setAttribute("class", "td");
-            th.innerHTML = x;
-            tr.appendChild(th);
-        }
-        tbody.appendChild(tr);
-
-        for (x in ss1) {
-            tr = document.createElement("tr");
-            td = document.createElement("td");
-            td.setAttribute("class", "td");
-            td.innerHTML = x;
-            tr.appendChild(td);
-
-            for (t in ss1[x]) {
-                td = document.createElement("td");
-                td.setAttribute("class", "td");
-                td.innerHTML = ss1[x][t];
-                tr.appendChild(td);
-            }
-            tbody.appendChild(tr);
-        }
 
         table.appendChild(caption);
-        table.appendChild(tbody);
-        table.setAttribute("class", "table table-striped table-bordered table-hover table-condensed");
-        table.setAttribute("name", {{year_select}}+month);
-        div.appendChild(table);
-
-        document.body.appendChild(div);
-        div.setAttribute("class", "container");
-
+        document.body.appendChild(table);
     }
 
     function create_sum_table(ss, year_select) {
@@ -85,36 +124,24 @@
         for (x in ss) {
             yuefen.push(x);
         }
+        document.write(yuefen);
+        document.write(yuefen.length);
+        document.write('{{query_type}}');
 
-        div = document.createElement("div");
-        div.setAttribute("class", "container");
-        hr = document.createElement("hr");
-        hr.setAttribute("class", "hr");
-        div.appendChild(hr)
-        document.body.appendChild(div);
-
-        div = document.createElement("div");
-        div.setAttribute("class", "container");
         table = document.createElement("table");
         table.setAttribute("name", yuefen[0]+yuefen[yuefen.length-1]);
-        table.setAttribute("class", "table table-striped table-bordered table-hover table-condensed");
-        tbody = document.createElement("tbody");
-        tbody.setAttribute("class", "td");
         tr = document.createElement("tr");
-        th = document.createElement("th");
-        th.setAttribute("class", "td");
-        th.innerHTML = null;
-        tr.appendChild(th);
-        tbody.appendChild(tr);
+        td = document.createElement("td");
+        td.innerHTML = null;
+        tr.appendChild(td);
 
         {#ss是:{"02月":"西安": {"工业": 1503,... "总计": 8486},"铜川": {"工业": 219,...},"03月":"..."}#}
         for (x in ss[yuefen[0]]["西安"]) {
-            th = document.createElement("th");
-            th.setAttribute("class", "td");
-            th.innerHTML = x;
-            tr.appendChild(th);
+            td = document.createElement("td");
+            td.innerHTML = x;
+            tr.appendChild(td);
         }
-        tbody.appendChild(tr);
+        table.appendChild(tr);
         {#x是西铜宝咸渭...#}
         for (x in ss[yuefen[0]]) {
             tr = document.createElement("tr");
@@ -133,11 +160,18 @@
                 td.innerHTML = jieguo;
                 tr.appendChild(td);
             }
-            tbody.appendChild(tr);
+            table.appendChild(tr);
         }
 
+        {#
         caption = document.createElement("caption");
-        caption.setAttribute("class", "caption");
+        if (month === 'year_report') {
+            caption.innerText = querytype + (parseInt(year_select) - 1).toString() + '年报';
+        } else {
+            caption.innerText = querytype + year_select.toString() + '年' + month;
+        }
+        #}
+        caption = document.createElement("caption");
         if (yuefen[0] === 'year_report' && yuefen[yuefen.length-1] === 'year_report') {
             caption.innerText = (parseInt(year_select)-1).toString()+'年报——'+(parseInt(year_select)-1).toString()+'年报总计';
         } else if (yuefen[0] === 'year_report' && yuefen[yuefen.length-1] !== 'year_report')
@@ -151,46 +185,39 @@
 
 
         table.appendChild(caption);
-        table.appendChild(tbody);
-        div.appendChild(table);
-        document.body.appendChild(div);
-
-        div = document.createElement("div");
-        div.setAttribute("class", "container");
-        hr = document.createElement("hr");
-        hr.setAttribute("class", "hr");
-        div.appendChild(hr)
-        document.body.appendChild(div);
+        document.body.appendChild(table);
     }
 
     function create_one_table_tongbi(ss, querytype, month, year_select, ss_lastyear) {
         ss1 = ss;
-
+        document.write(typeof ss1);
+        document.write(ss1.西安.工业);
+        document.write(ss1);
+        document.write('{{query_type}}');
         if (querytype === 'LW') {
             querytype = '联网直报平台存量';
         } else if (querytype === 'SP') {
             querytype = '审批平台增量';
         }
 
-        div = document.createElement("div");
-        div.setAttribute("class", "container");
+
+        var b = 'TTTTTTTTTTTTTTTTTTTTTTTTTTTTT';
+        document.write(b);
+
         table = document.createElement("table");
-        table.setAttribute("class", "table table-striped table-bordered table-hover table-condensed");
-        tbody = document.createElement("tbody");
-        tbody.setAttribute("class", "td");
         tr = document.createElement("tr");
-        th = document.createElement("th");
-        th.innerHTML = null;
-        tr.appendChild(th);
+
+        td = document.createElement("td");
+        td.innerHTML = null;
+        tr.appendChild(td);
         {#ss1是:{"西安": {"工业": 1503,... "总计": 8486}"铜川": {"工业": 219,...}#}
         for (x in ss1["西安"]) {
-            th = document.createElement("th");
-            th.setAttribute("class", "td");
-            th.innerHTML = x;
-            tr.appendChild(th);
+            td = document.createElement("td");
+            td.innerHTML = x;
+            tr.appendChild(td);
         }
         {#tr是：表格第一行，工业，建筑业等等#}
-        tbody.appendChild(tr);
+        table.appendChild(tr);
 
         {#下面的for循环中，x为西铜宝咸渭...，t为工业建筑业...#}
         for (x in ss1) {
@@ -199,7 +226,11 @@
             td.innerHTML = x;
             tr.appendChild(td);
             {#ss1[x]是{"工业": 1503,... "总计": 8486}#}
+            document.write(ss1[x]);
 
+            {#td = document.createElement("td");#}
+            {#td.innerHTML = ss1[x]["工业"];#}
+            {#tr.appendChild(td);#}
             for (t in ss1[x]) {
                 td = document.createElement("td");
                 {#下行是查询ss1[西安][工业],ss1[西安][建筑业]...等等#}
@@ -213,13 +244,10 @@
                 {#td.innerHTML = innerHTML_temp;#}
                 tr.appendChild(td);
             }
-            tbody.appendChild(tr);
-            table.appendChild(tbody);
+            table.appendChild(tr);
         }
 
         caption = document.createElement("caption");
-        caption.setAttribute("class", "caption");
-
         if (month === 'year_report') {
             caption.innerText = querytype + (parseInt(year_select) - 1).toString() + '年报' + '同比';
         } else {
@@ -227,48 +255,41 @@
         }
 
         table.appendChild(caption);
-        div.appendChild(table);
-        document.body.appendChild(div);
+        document.body.appendChild(table);
     }
 
 
     function create_net_growth_table(ss, querytype, month, year_select, ss_lastyear) {
+        var ss_december_lastyear
         ss1 = ss;
-
+        document.write(typeof ss1);
+        document.write(ss1.西安.工业);
+        document.write(ss1);
+        document.write('{{query_type}}');
         if (querytype === 'LW') {
             querytype = '联网直报平台存量';
         } else if (querytype === 'SP') {
             querytype = '审批平台增量';
         }
 
-        div = document.createElement("div");
-        div.setAttribute("class", "container");
-        hr = document.createElement("hr");
-        hr.setAttribute("class", "hr");
-        div.appendChild(hr)
-        document.body.appendChild(div);
 
+        var b = 'TTTTTTTTTTTTTTTTTTTTTTTTTTTTT';
+        document.write(b);
 
-        div = document.createElement("div");
-        div.setAttribute("class", "container");
         table = document.createElement("table");
-        table.setAttribute("class", "table table-striped table-bordered table-hover table-condensed");
-        tbody = document.createElement("tbody");
-        tbody.setAttribute("class", "td");
         tr = document.createElement("tr");
-        th = document.createElement("th");
-        th.setAttribute("class","td");
-        th.innerHTML = null;
-        tr.appendChild(th);
+
+        td = document.createElement("td");
+        td.innerHTML = null;
+        tr.appendChild(td);
         {#ss1是:{"西安": {"工业": 1503,... "总计": 8486}"铜川": {"工业": 219,...}#}
         for (x in ss1["西安"]) {
-            th = document.createElement("th");
-            th.setAttribute("class","td");
-            th.innerHTML = x;
-            tr.appendChild(th);
+            td = document.createElement("td");
+            td.innerHTML = x;
+            tr.appendChild(td);
         }
         {#tr是：表格第一行，工业，建筑业等等#}
-        tbody.appendChild(tr);
+        table.appendChild(tr);
 
         {#下面的for循环中，x为西铜宝咸渭...，t为工业建筑业...#}
         for (x in ss1) {
@@ -277,7 +298,7 @@
             td.innerHTML = x;
             tr.appendChild(td);
             {#ss1[x]是{"工业": 1503,... "总计": 8486}#}
-            {#document.write(ss1[x]);#}
+            document.write(ss1[x]);
 
             {#td = document.createElement("td");#}
             {#td.innerHTML = ss1[x]["工业"];#}
@@ -292,25 +313,15 @@
                 {#td.innerHTML = innerHTML_temp;#}
                 tr.appendChild(td);
             }
-            tbody.appendChild(tr);
+            table.appendChild(tr);
         }
 
         caption = document.createElement("caption");
-        caption.setAttribute("class", "caption");
         caption.innerText = querytype + year_select.toString() + '年' +month+ '月净增';
 
 
         table.appendChild(caption);
-        table.appendChild(tbody);
-        div.appendChild(table);
-        document.body.appendChild(div);
-
-        div = document.createElement("div");
-        div.setAttribute("class", "container");
-        hr = document.createElement("hr");
-        hr.setAttribute("class", "hr");
-        div.appendChild(hr)
-        document.body.appendChild(div);
+        document.body.appendChild(table);
     }
 
     ss_all = JSON.parse(ss);
@@ -325,14 +336,14 @@
 
     {#显示出总和数#}
     if (querytype==='SP'){create_sum_table(ss_all,{{year_select}});}
-    {#document.write(ss_all_december_lastyear["12月"]);#}
-    {#document.write(ss_all);#}
-    {#document.write('SSSSSSSSS');#}
+    document.write(ss_all_december_lastyear["12月"]);
+    document.write(ss_all);
+    document.write('SSSSSSSSS');
 
 
-    {#显示出净增数，净增数是和上年12月月度比较#}
+    {#显示出净增数#}
     var LLL=Object.keys(ss_all);
-    {#document.write(LLL[LLL.length-1]);#}
+    document.write(LLL[LLL.length-1]);
     if (querytype==='LW'){
         create_net_growth_table(ss_all[LLL[LLL.length-1]],querytype,{{month_select}},{{year_select}},ss_all_december_lastyear["12月"]);
     }
@@ -344,5 +355,5 @@
 
 </script>
 
-{% endblock %}
-
+</body>
+</html>

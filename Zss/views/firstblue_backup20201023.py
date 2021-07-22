@@ -152,6 +152,6 @@ def login2():
         #response = 'count_temp的个数是{}'.format(count_temp)
         # response.set_cookie("cookie_username", username)     # 设置cookie
         # session["session_username"] = username  # 设置session
-        return render_template('index.html',msg=msg,aa={ "name":"Bill Gates",  "age":62, "city":"Seattle" },
-                               year_select=year_select,month_select=month_select,query_type=query_type)  # 注意这里必须将response返回，否则不能set_cookie
+        return render_template('index.html', msg=msg, aa={"name": "Bill Gates", "age":62, "city": "Seattle"},
+                               year_select=year_select, month_select=month_select, query_type=query_type)  # 注意这里必须将response返回，否则不能set_cookie
         #return msg # 注意这里必须将response返回，否则不能set_cookie

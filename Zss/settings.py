@@ -31,7 +31,7 @@ class DevelopConfig(Config):
         "PASSWORD": "zss11111111",
         "HOST": "localhost",
         "PORT": "58651",
-        "DBNAME": "zss_shenpi",
+        "DBNAME": "审批平台数据库",
         "ODBCNAME": "ODBC+Driver+13+for+SQL+Server"
     }
 
@@ -42,7 +42,7 @@ class DevelopConfig(Config):
         "PASSWORD": "zss11111111",
         "HOST": "localhost",
         "PORT": "58651",
-        "DBNAME": "zss",
+        "DBNAME": "联网直报平台数据库",
         "ODBCNAME": "ODBC+Driver+13+for+SQL+Server"
     }
 
