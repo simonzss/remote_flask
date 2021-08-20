@@ -1,9 +1,10 @@
 from Zss.extensions import db
+#  db的来源是from flask_sqlalchemy import SQLAlchemy  #db = SQLAlchemy()
 
 year = ["2013", "2014", "2015", "2016","2017", "2018", "2019", "2020","2021"]
 month = ["02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
-query_type = ["LW", "SP"]
-query_type1 = ["SP_YEAR"]
+query_type = ["LW", "SP","TK"]
+query_type1 = ["SP_YEAR","TK_YEAR"]
 
 
 def create_class(query_type, year, month=[""]):
@@ -28,7 +29,12 @@ def create_class(query_type, year, month=[""]):
                 elif x == "SP_YEAR":
                     globals()[str(x + y + z)] = type(x + y + z, (db.Model, MonthSPYEAR),
                                                      {'__tablename__': y + z + "_year_1"})
-
+                elif x == "TK":
+                    globals()[str(x + y + z)] = type(x + y + z, (db.Model, Month_TK),
+                                                     {'__tablename__': y + z + "_month_2",'__bind_key__': 'tk'})
+                elif x == "TK_YEAR":
+                    globals()[str(x + y + z)] = type(x + y + z, (db.Model, Month_TKYEAR),
+                                                     {'__tablename__': y + z + "_year_2",'__bind_key__': 'tk'})
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -131,9 +137,44 @@ class Month():
     单位类型 = db.Column(db.Unicode(255))
     审核类型 = db.Column(db.Unicode(255))
 
+class Month_TK():
+    单位类型 = db.Column(db.Unicode(255))
+    审核类型 = db.Column(db.Unicode(255))
+    所属专业 = db.Column(db.Unicode(255))
+    组织机构代码 = db.Column(db.Unicode(255),primary_key=True)
+    单位详细名称 = db.Column(db.Unicode(255))
+    统计局代码 = db.Column(db.Unicode(255))
+    所在地区划代码 = db.Column(db.Unicode(255))
+    注册地区划代码 = db.Column(db.Unicode(255))
+    主要业务活动 = db.Column(db.Unicode(255))
+    行业代码_17 = db.Column(db.Unicode(255))
+    实际单位类型 = db.Column(db.Unicode(255))
+    备注 = db.Column(db.Unicode(255))
+    #填表处理地代码 = db.Column(db.Unicode(255))
+
+class Month_TKYEAR():
+    单位类型 = db.Column(db.Unicode(255))
+    审核类型 = db.Column(db.Unicode(255))
+    所属专业 = db.Column(db.Unicode(255))
+    组织机构代码 = db.Column(db.Unicode(255),primary_key=True)
+    详细名称 = db.Column(db.Unicode(255))
+    统计局代码 = db.Column(db.Unicode(255))
+    所在地区划代码 = db.Column(db.Unicode(255))
+    注册地区划代码 = db.Column(db.Unicode(255))
+    主要业务活动 = db.Column(db.Unicode(255))
+    行业代码_17 = db.Column(db.Unicode(255))
+    实际单位类型 = db.Column(db.Unicode(255))
+    备注 = db.Column(db.Unicode(255))
+    填表处理地代码 = db.Column(db.Unicode(255))
+
+
 
 create_class(query_type, year, month=month)
 create_class(query_type1, year)
+
+# class TK202102(db.Model, Month_TK):
+#     __tablename__ = '202102_month_2'
+#     __bind_key__ = 'tk'
 
 # class LW201912(db.Model, Month):
 #     __tablename__ = '201912_month'

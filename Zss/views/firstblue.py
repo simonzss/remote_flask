@@ -106,8 +106,13 @@ def mine():
 
 @first_blueprint.route('/getuser/')
 def getuser():
-    user = LW201512.query.filter(LW201512.数据处理地.like('6101%')).count()
-    print(LW201512.query)
+    # user = LW201512.query.filter(LW201512.数据处理地.like('6101%')).count()
+    user = TK202102.query.with_entities(TK202102.所属专业, TK202102.审核类型, func.count()).filter(
+        TK202102.行业代码_17.startswith('13')).group_by('所属专业', '审核类型').all()
+    # 结果为[('1', '1', 9), ('9', '7', 6)]，所属专业在前，审核类型在后
+    # user = TK202102.query.with_entities(TK202102.所属专业, TK202102.审核类型,func.count()).group_by('所属专业','审核类型').all()
+    print(TK202102.query, '***************************')
+    print(str(user))
     return 'user的个数是{}'.format(user)
 
 
@@ -192,6 +197,124 @@ specinfo_SP = {
     "五上": ["1", "2", "3", "4", "5", "6", "7", "8"],
 }
 
+highTechManu_yyzzy = ["2710", "2720", "2730", "2740", "2750", "2761", "2762", "2770", "2780"]
+highTechManu_hkhtzzy = ["3741", "3742", "3743", "3744", "3749", "4343"]
+highTechManu_dztxzzy = ["3562", "3563", "3569", "3832", "3833", "3841", "3921", "3922", "3940", "3931", "3932", "3933",
+                        "3934", "3939", "3951", "3952", "3953", "3971", "3972", "3973", "3974", "3975", "3976", "3979",
+                        "3981", "3983", "3984", "3985", "3989", "3982", "3961", "3962", "3963", "3969", "3990"]
+highTechManu_jsjbgzzy = ["3911", "3912", "3913", "3914", "3915", "3919", "3474", "3475"]
+highTechManu_ylyqybzzy = ["3581", "3582", "3583", "3584", "3585", "3586", "3589", "4011", "4012", "4013", "4014",
+                          "4015", "4016",
+                          "4019", "4021", "4022", "4023", "4024", "4025", "4026", "4027", "4028", "4029", "4040",
+                          "4090"]
+highTechManu_xxhxpzzy = ["2664", "2665"]
+highTechManu = highTechManu_yyzzy + highTechManu_hkhtzzy + highTechManu_dztxzzy + highTechManu_jsjbgzzy + highTechManu_ylyqybzzy + highTechManu_xxhxpzzy
+
+zhulaninfo_TK = {
+    "工业": ["1"],  #工业必须有，不可删除
+    "建筑业": ["2"],
+    "批发业": ["3"],
+    "零售业": ["4"],
+    "住宿业": ["5"],
+    "餐饮业": ["6"],
+    "房地产": ["7"],
+    "服务业": ["8"],
+    "投资": ["9"],
+    "总计": ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+    "五上": ["1", "2", "3", "4", "5", "6", "7", "8"],
+    "农林牧渔业": ["01", "02", "03", "04", "05"],
+    "采矿业": ["06", "07", "08", "09", "10", "11", "12"],
+    "制造业": ["1300", "4399"],
+    "医药制造业": highTechManu_yyzzy,
+    "航空航天器及设备制造业": highTechManu_hkhtzzy,
+    "电子及通信设备制造业": highTechManu_dztxzzy,
+    "计算机及办公设备制造业": highTechManu_jsjbgzzy,
+    "医疗仪器设备及仪器仪表制造业": highTechManu_ylyqybzzy,
+    "信息化学品制造业": highTechManu_xxhxpzzy,
+    "高技术制造业":highTechManu,
+    # 添加新值后需要改动query_type == 'TK'下的代码，指定查询方式
+}
+
+binlaninfo_TK = {
+    "上年度营收不够": ["1"],
+    "当年无经营房地产": ["2"],
+    "注销吊销退出": ["3"],
+    "专业变更退出": ["4"],
+    "辖区跨省退出": ["5"],
+    "单位界定错误": ["6"],
+    "投资项目完成": ["7"],
+    "停业歇业退出": ["8"],
+    "其他原因退出": ["9"],
+    "合计": ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+}
+
+
+def query_year_month(t_C, query_type, cityinfo, specinfo):
+    # count_temp = t_C.query.filter(t_C.数据处理地.startswith('6101%'),t_C.报表类别=="B").count()
+    # count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(t_C.数据处理地.startswith('6101%'),t_C.报表类别=="B").scalar()
+    s_n = {}
+    s = {}
+    # print(list(cityinfo.keys()))
+    # print(list(specinfo.keys()))
+    # print(list(cityinfo.values()))
+    for i in list(cityinfo.keys()):
+        if query_type == 'LW':
+            count_temp_haha = t_C.query.filter(t_C.数据处理地.startswith(cityinfo[i][0]))
+            if len(cityinfo[i]) > 1:
+                for k in range(1, len(cityinfo[i])):
+                    count_temp_haha = count_temp_haha.union_all(
+                        t_C.query.filter(t_C.数据处理地.startswith(cityinfo[i][k])))
+        elif query_type == 'TK':
+            if i in ["工业", "建筑业", "批发业", "零售业", "住宿业", "餐饮业", "房地产", "服务业", "投资", "总计", "五上"]:
+                count_temp_haha = t_C.query.filter(t_C.所属专业 == cityinfo[i][0])
+                if len(cityinfo[i]) > 1:
+                    for k in range(1, len(cityinfo[i])):
+                        count_temp_haha = count_temp_haha.union_all(
+                            t_C.query.filter(t_C.所属专业 == cityinfo[i][k]))
+            elif i in ["农林牧渔业", "采矿业"]:
+                count_temp_haha = t_C.query.filter(t_C.行业代码_17.startswith(cityinfo[i][0]))
+                if len(cityinfo[i]) > 1:
+                    for k in range(1, len(cityinfo[i])):
+                        count_temp_haha = count_temp_haha.union_all(
+                            t_C.query.filter(t_C.行业代码_17.startswith(cityinfo[i][k])))
+            elif i in ["高技术制造业","医药制造业","航空航天器及设备制造业","电子及通信设备制造业",
+                       "计算机及办公设备制造业","医疗仪器设备及仪器仪表制造业","信息化学品制造业"]:
+                count_temp_haha = t_C.query.filter(t_C.行业代码_17.in_(cityinfo[i]))
+            elif i in ["制造业"]:
+                count_temp_haha = t_C.query.filter(t_C.行业代码_17.between(cityinfo[i][0],cityinfo[i][1]))
+                #print(str(count_temp_haha))
+
+        else:  # query_type == 'SP' or 'SP_YEAR'
+            count_temp_haha = t_C.query.filter(t_C.统计局代码.startswith(cityinfo[i][0]))
+            if len(cityinfo[i]) > 1:
+                for k in range(1, len(cityinfo[i])):
+                    count_temp_haha = count_temp_haha.union_all(
+                        t_C.query.filter(t_C.统计局代码.startswith(cityinfo[i][k])))
+
+        for j in list(specinfo.keys()):  # ['工业', ... '总计']
+            count_temp1 = 0
+            for list_temp in specinfo[j]:  # "总计"key对应的value["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+                # count_temp = t_C.query.filter(t_C.数据处理地.startswith(cityinfo[i]), t_C.报表类别 == list_temp).count()
+                if query_type == 'LW':
+                    count_temp = count_temp_haha.filter(t_C.报表类别 == list_temp).count()
+                    # count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(
+                    # t_C.数据处理地.startswith(cityinfo[i]), t_C.报表类别 == list_temp).scalar()
+                elif query_type == 'SP':
+                    count_temp = count_temp_haha.filter(t_C.所属专业 == list_temp, t_C.单位类型 == "1",
+                                                        t_C.审批类型.in_(['1', '2', '6', '9'])).count()
+                elif query_type == 'SP_YEAR':
+                    count_temp = count_temp_haha.filter(t_C.所属专业 == list_temp, t_C.单位类型 == "1",
+                                                        t_C.审核类型.in_(['1', '2', '4'])).count()
+                elif query_type == 'TK':
+                    count_temp = count_temp_haha.filter(t_C.审核类型 == list_temp, t_C.单位类型 == "1",
+                                                        ).count()
+                count_temp1 = count_temp1 + count_temp
+            s_n[j] = count_temp1
+            # print(s_n, "```````````")
+            s[i] = copy.deepcopy(s_n)
+    # print(s)
+    return s
+
 
 @first_blueprint.route('/login2/', methods=["GET", "POST"])
 def login2():
@@ -223,94 +346,137 @@ def login2():
                     L.append(str(t))
         print(L)
 
-        # def query_year_month(t_C, query_type, cityinfo, specinfo):
-        #     # count_temp = t_C.query.filter(t_C.数据处理地.startswith('6101%'),t_C.报表类别=="B").count()
-        #     # count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(t_C.数据处理地.startswith('6101%'),t_C.报表类别=="B").scalar()
-        #     s_n = {}
-        #     s = {}
-        #     print(list(cityinfo.keys()))
-        #     print(list(specinfo.keys()))
-        #     for i in list(cityinfo.keys()):
-        #         for j in list(specinfo.keys()):  # ['工业', ... '总计', '同比']
-        #             count_temp1 = 0
-        #             for list_temp in specinfo[j]:  # "总计"key对应的value["1", "2", "3", "4", "5", "6", "7", "8", "9"],
-        #                 # count_temp = t_C.query.filter(t_C.数据处理地.startswith(cityinfo[i]), t_C.报表类别 == list_temp).count()
-        #                 if query_type == 'LW':
-        #                     count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(
-        #                         t_C.数据处理地.startswith(cityinfo[i]), t_C.报表类别 == list_temp).scalar()
-        #                 elif query_type == 'SP':
-        #                     if cityinfo[i] == "6104%":
-        #                         count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(
-        #                             or_(t_C.统计局代码.like('6104[^0]%'), t_C.统计局代码.like('61040[^3]%'))).filter(
-        #                             t_C.所属专业 == list_temp, t_C.单位类型 == "1").filter(
-        #                             t_C.审批类型.in_(['1', '2', '6', '9'])).scalar()
-        #                     else:
-        #                         count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(
-        #                             t_C.统计局代码.startswith(cityinfo[i]), t_C.所属专业 == list_temp,
-        #                                                                t_C.单位类型 == "1").filter(
-        #                             t_C.审批类型.in_(['1', '2', '6', '9'])).scalar()
-        #                 elif query_type == 'SP_YEAR':
-        #                     if cityinfo[i] == "6104%":
-        #                         count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(
-        #                             or_(t_C.统计局代码.like('6104[^0]%'), t_C.统计局代码.like('61040[^3]%'))).filter(
-        #                             t_C.所属专业 == list_temp, t_C.单位类型 == "1").filter(
-        #                             t_C.审核类型.in_(['1', '2', '4'])).scalar()
-        #                     else:
-        #                         count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(
-        #                             t_C.统计局代码.startswith(cityinfo[i]), t_C.所属专业 == list_temp,
-        #                                                                t_C.单位类型 == "1").filter(
-        #                             t_C.审核类型.in_(['1', '2', '4'])).scalar()
-        #
-        #                 count_temp1 = count_temp1 + count_temp
-        #             s_n[j] = count_temp1
-        #         # print(s_n, "```````````")
-        #         s[i] = copy.deepcopy(s_n)
-        #     print(s)
-        #     return s
+        s_all = {}
+        for x in L:
+            if x == "year_report":
+                if query_type == "SP":
+                    post_str = "SP_YEAR" + str(int(year_select) - 1)
+                    t_C = globals()[post_str]
+                    # print(post_str, "####")
+                    # print(query_type, "####")
+                    msg_temp = query_year_month(t_C, "SP_YEAR", cityinfo_SP, specinfo_SP)
+                    s_all[x] = msg_temp
+                elif query_type == "TK":
+                    post_str = "TK_YEAR" + str(int(year_select) - 1)
+                    t_C = globals()[post_str]
+                    # print(post_str, "####")
+                    # print(query_type, "####")
+                    msg_temp = query_year_month(t_C, "TK", zhulaninfo_TK, binlaninfo_TK)
+                    s_all[x] = msg_temp
+            else:
+                post_str = query_type + year_select + x
+                print(post_str, "~~~~~")
+                t_C = globals()[post_str]
+                if query_type == "LW":
+                    msg_temp = query_year_month(t_C, query_type, cityinfo, specinfo)
+                elif query_type == "SP":
+                    msg_temp = query_year_month(t_C, query_type, cityinfo_SP, specinfo_SP)
+                elif query_type == "TK":
+                    msg_temp = query_year_month(t_C, query_type, zhulaninfo_TK, binlaninfo_TK)
+                s_all[x + "月"] = msg_temp
+        msg = json.dumps(s_all, ensure_ascii=False)
 
-        def query_year_month(t_C, query_type, cityinfo, specinfo):
-            # count_temp = t_C.query.filter(t_C.数据处理地.startswith('6101%'),t_C.报表类别=="B").count()
-            # count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(t_C.数据处理地.startswith('6101%'),t_C.报表类别=="B").scalar()
-            s_n = {}
-            s = {}
-            # print(list(cityinfo.keys()))
-            # print(list(specinfo.keys()))
-            # print(list(cityinfo.values()))
-            for i in list(cityinfo.keys()):
-                if query_type == 'LW':
-                    count_temp_haha = t_C.query.filter(t_C.数据处理地.startswith(cityinfo[i][0]))
-                    if len(cityinfo[i]) > 1:
-                        for k in range(1, len(cityinfo[i])):
-                            count_temp_haha = count_temp_haha.union(
-                                t_C.query.filter(t_C.数据处理地.startswith(cityinfo[i][k])))
-                else:
-                    count_temp_haha = t_C.query.filter(t_C.统计局代码.startswith(cityinfo[i][0]))
-                    if len(cityinfo[i]) > 1:
-                        for k in range(1, len(cityinfo[i])):
-                            count_temp_haha = count_temp_haha.union(
-                                t_C.query.filter(t_C.统计局代码.startswith(cityinfo[i][k])))
-                for j in list(specinfo.keys()):  # ['工业', ... '总计']
-                    count_temp1 = 0
-                    for list_temp in specinfo[j]:  # "总计"key对应的value["1", "2", "3", "4", "5", "6", "7", "8", "9"],
-                        # count_temp = t_C.query.filter(t_C.数据处理地.startswith(cityinfo[i]), t_C.报表类别 == list_temp).count()
-                        if query_type == 'LW':
-                            count_temp = count_temp_haha.filter(t_C.报表类别 == list_temp).count()
-                            # count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(
-                            # t_C.数据处理地.startswith(cityinfo[i]), t_C.报表类别 == list_temp).scalar()
-                        elif query_type == 'SP':
-                            count_temp = count_temp_haha.filter(t_C.所属专业 == list_temp, t_C.单位类型 == "1",
-                                                                t_C.审批类型.in_(['1', '2', '6', '9'])).count()
-                        elif query_type == 'SP_YEAR':
-                            count_temp = count_temp_haha.filter(t_C.所属专业 == list_temp, t_C.单位类型 == "1",
-                                                                t_C.审核类型.in_(['1', '2', '4'])).count()
+        s_all_lastyear = {}
+        for x in L:
+            if x == "year_report":
+                if query_type == "SP":
+                    post_str = "SP_YEAR" + str(int(year_select) - 2)
+                    t_C = globals()[post_str]
+                    msg_temp = query_year_month(t_C, "SP_YEAR", cityinfo_SP, specinfo_SP)
+                    s_all_lastyear[x] = msg_temp
+                elif query_type == "TK":
+                    post_str = "TK_YEAR" + str(int(year_select) - 2)
+                    t_C = globals()[post_str]
+                    msg_temp = query_year_month(t_C, "TK", zhulaninfo_TK, binlaninfo_TK)
+                    s_all_lastyear[x] = msg_temp
+            else:
+                post_str = query_type + str(int(year_select) - 1) + x
+                # print(post_str, "~~~~~")
+                t_C = globals()[post_str]
+                if query_type == "LW":
+                    msg_temp = query_year_month(t_C, query_type, cityinfo, specinfo)
+                elif query_type == "SP":
+                    msg_temp = query_year_month(t_C, query_type, cityinfo_SP, specinfo_SP)
+                elif query_type == "TK":
+                    msg_temp = query_year_month(t_C, query_type, zhulaninfo_TK, binlaninfo_TK)
+                s_all_lastyear[x + "月"] = msg_temp
+        msg_lastyear = json.dumps(s_all_lastyear, ensure_ascii=False)
 
-                        count_temp1 = count_temp1 + count_temp
-                    s_n[j] = count_temp1
-                    # print(s_n, "```````````")
-                    s[i] = copy.deepcopy(s_n)
-            # print(s)
-            return s
+        s_december_lastyear = {}
+        if query_type == "LW":
+            post_str = query_type + str(int(year_select) - 1) + "12"
+            t_C = globals()[post_str]
+            msg_temp = query_year_month(t_C, "LW", cityinfo, specinfo)
+            s_december_lastyear["12月"] = msg_temp
+        msg_december_lastyear = json.dumps(s_december_lastyear, ensure_ascii=False)
 
+        # print(type(msg_lastyear))
+        # print(msg_lastyear)
+        # print(type(msg))
+        # print(msg)
+
+        # response = 'count_temp的个数是{}'.format(count_temp)
+        # response.set_cookie("cookie_username", username)     # 设置cookie
+        # session["session_username"] = username  # 设置session
+        return render_template('index.html', msg=msg, msg_lastyear=msg_lastyear,
+                               msg_december_lastyear=msg_december_lastyear,
+                               aa={"name": "Bill Gates", "age": 62, "city": "Seattle"},
+                               year_select=year_select, month_start=month_start, month_select=month_select,
+                               query_type=query_type)
+        # 注意这里必须将response返回，否则不能set_cookie
+
+
+@first_blueprint.errorhandler(500)
+def internal_error(error):
+    return render_template('error_500.html'), 500
+
+    # def query_year_month(t_C, query_type, cityinfo, specinfo):
+    #     # count_temp = t_C.query.filter(t_C.数据处理地.startswith('6101%'),t_C.报表类别=="B").count()
+    #     # count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(t_C.数据处理地.startswith('6101%'),t_C.报表类别=="B").scalar()
+    #     s_n = {}
+    #     s = {}
+    #     print(list(cityinfo.keys()))
+    #     print(list(specinfo.keys()))
+    #     for i in list(cityinfo.keys()):
+    #         for j in list(specinfo.keys()):  # ['工业', ... '总计', '同比']
+    #             count_temp1 = 0
+    #             for list_temp in specinfo[j]:  # "总计"key对应的value["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+    #                 # count_temp = t_C.query.filter(t_C.数据处理地.startswith(cityinfo[i]), t_C.报表类别 == list_temp).count()
+    #                 if query_type == 'LW':
+    #                     count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(
+    #                         t_C.数据处理地.startswith(cityinfo[i]), t_C.报表类别 == list_temp).scalar()
+    #                 elif query_type == 'SP':
+    #                     if cityinfo[i] == "6104%":
+    #                         count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(
+    #                             or_(t_C.统计局代码.like('6104[^0]%'), t_C.统计局代码.like('61040[^3]%'))).filter(
+    #                             t_C.所属专业 == list_temp, t_C.单位类型 == "1").filter(
+    #                             t_C.审批类型.in_(['1', '2', '6', '9'])).scalar()
+    #                     else:
+    #                         count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(
+    #                             t_C.统计局代码.startswith(cityinfo[i]), t_C.所属专业 == list_temp,
+    #                                                                t_C.单位类型 == "1").filter(
+    #                             t_C.审批类型.in_(['1', '2', '6', '9'])).scalar()
+    #                 elif query_type == 'SP_YEAR':
+    #                     if cityinfo[i] == "6104%":
+    #                         count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(
+    #                             or_(t_C.统计局代码.like('6104[^0]%'), t_C.统计局代码.like('61040[^3]%'))).filter(
+    #                             t_C.所属专业 == list_temp, t_C.单位类型 == "1").filter(
+    #                             t_C.审核类型.in_(['1', '2', '4'])).scalar()
+    #                     else:
+    #                         count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(
+    #                             t_C.统计局代码.startswith(cityinfo[i]), t_C.所属专业 == list_temp,
+    #                                                                t_C.单位类型 == "1").filter(
+    #                             t_C.审核类型.in_(['1', '2', '4'])).scalar()
+    #
+    #                 count_temp1 = count_temp1 + count_temp
+    #             s_n[j] = count_temp1
+    #         # print(s_n, "```````````")
+    #         s[i] = copy.deepcopy(s_n)
+    #     print(s)
+    #     return s
+
+
+'''原版正确运行的s_all
         s_all = {}
         for x in L:
             if x == "year_report":
@@ -332,48 +498,71 @@ def login2():
         msg = json.dumps(s_all, ensure_ascii=False)
         # print(type(msg))
         # print(msg)
+'''
 
-        s_all_lastyear = {}
-        for x in L:
-            if x == "year_report":
-                post_str = "SP_YEAR" + str(int(year_select) - 2)
-                t_C = globals()[post_str]
-                # print(post_str, "####")
-                # print(query_type, "####")
-                msg_temp = query_year_month(t_C, "SP_YEAR", cityinfo_SP, specinfo_SP)
-                s_all_lastyear[x] = msg_temp
-            else:
-                post_str = query_type + str(int(year_select) - 1) + x
-                # print(post_str, "~~~~~")
-                t_C = globals()[post_str]
-                if query_type == "LW":
-                    msg_temp = query_year_month(t_C, query_type, cityinfo, specinfo)
-                elif query_type == "SP":
-                    msg_temp = query_year_month(t_C, query_type, cityinfo_SP, specinfo_SP)
-                s_all_lastyear[x + "月"] = msg_temp
-        msg_lastyear = json.dumps(s_all_lastyear, ensure_ascii=False)
-
-        s_december_lastyear = {}
-        if query_type == "LW":
-            post_str = query_type + str(int(year_select) - 1) + "12"
-            t_C = globals()[post_str]
-            msg_temp = query_year_month(t_C, "LW", cityinfo, specinfo)
-            s_december_lastyear["12月"] = msg_temp
-        msg_december_lastyear = json.dumps(s_december_lastyear, ensure_ascii=False)
-
-        # print(type(msg_lastyear))
-        # print(msg_lastyear)
-        # response = 'count_temp的个数是{}'.format(count_temp)
-        # response.set_cookie("cookie_username", username)     # 设置cookie
-        # session["session_username"] = username  # 设置session
-        return render_template('index.html', msg=msg, msg_lastyear=msg_lastyear,
-                               msg_december_lastyear=msg_december_lastyear,
-                               aa={"name": "Bill Gates", "age": 62, "city": "Seattle"},
-                               year_select=year_select, month_start=month_start, month_select=month_select,
-                               query_type=query_type)
-        # 注意这里必须将response返回，否则不能set_cookie
+# 原版正确的s_all_lastyear
+# s_all_lastyear = {}
+# for x in L:
+#     if x == "year_report":
+#         post_str = "SP_YEAR" + str(int(year_select) - 2)
+#         t_C = globals()[post_str]
+#         # print(post_str, "####")
+#         # print(query_type, "####")
+#         msg_temp = query_year_month(t_C, "SP_YEAR", cityinfo_SP, specinfo_SP)
+#         s_all_lastyear[x] = msg_temp
+#     else:
+#         post_str = query_type + str(int(year_select) - 1) + x
+#         # print(post_str, "~~~~~")
+#         t_C = globals()[post_str]
+#         if query_type == "LW":
+#             msg_temp = query_year_month(t_C, query_type, cityinfo, specinfo)
+#         elif query_type == "SP":
+#             msg_temp = query_year_month(t_C, query_type, cityinfo_SP, specinfo_SP)
+#         s_all_lastyear[x + "月"] = msg_temp
+# msg_lastyear = json.dumps(s_all_lastyear, ensure_ascii=False)
 
 
-@first_blueprint.errorhandler(500)
-def internal_error(error):
-    return render_template('error_500.html'), 500
+'''原版正确运行的query_year_month函数
+def query_year_month(t_C, query_type, cityinfo, specinfo):
+    # count_temp = t_C.query.filter(t_C.数据处理地.startswith('6101%'),t_C.报表类别=="B").count()
+    # count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(t_C.数据处理地.startswith('6101%'),t_C.报表类别=="B").scalar()
+    s_n = {}
+    s = {}
+    # print(list(cityinfo.keys()))
+    # print(list(specinfo.keys()))
+    # print(list(cityinfo.values()))
+    for i in list(cityinfo.keys()):
+        if query_type == 'LW':
+            count_temp_haha = t_C.query.filter(t_C.数据处理地.startswith(cityinfo[i][0]))
+            if len(cityinfo[i]) > 1:
+                for k in range(1, len(cityinfo[i])):
+                    count_temp_haha = count_temp_haha.union_all(
+                        t_C.query.filter(t_C.数据处理地.startswith(cityinfo[i][k])))
+        else:
+            count_temp_haha = t_C.query.filter(t_C.统计局代码.startswith(cityinfo[i][0]))
+            if len(cityinfo[i]) > 1:
+                for k in range(1, len(cityinfo[i])):
+                    count_temp_haha = count_temp_haha.union_all(
+                        t_C.query.filter(t_C.统计局代码.startswith(cityinfo[i][k])))
+        for j in list(specinfo.keys()):  # ['工业', ... '总计']
+            count_temp1 = 0
+            for list_temp in specinfo[j]:  # "总计"key对应的value["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+                # count_temp = t_C.query.filter(t_C.数据处理地.startswith(cityinfo[i]), t_C.报表类别 == list_temp).count()
+                if query_type == 'LW':
+                    count_temp = count_temp_haha.filter(t_C.报表类别 == list_temp).count()
+                    # count_temp = db.session.query(func.count(t_C.组织机构代码)).filter(
+                    # t_C.数据处理地.startswith(cityinfo[i]), t_C.报表类别 == list_temp).scalar()
+                elif query_type == 'SP':
+                    count_temp = count_temp_haha.filter(t_C.所属专业 == list_temp, t_C.单位类型 == "1",
+                                                        t_C.审批类型.in_(['1', '2', '6', '9'])).count()
+                elif query_type == 'SP_YEAR':
+                    count_temp = count_temp_haha.filter(t_C.所属专业 == list_temp, t_C.单位类型 == "1",
+                                                        t_C.审核类型.in_(['1', '2', '4'])).count()
+
+                count_temp1 = count_temp1 + count_temp
+            s_n[j] = count_temp1
+            # print(s_n, "```````````")
+            s[i] = copy.deepcopy(s_n)
+    # print(s)
+    return s
+'''

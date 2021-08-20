@@ -27,6 +27,8 @@
             querytype = '联网直报平台存量';
         } else if (querytype === 'SP') {
             querytype = '审批平台增量';
+        } else if (querytype === 'TK') {
+            querytype = '审批平台退库';
         }
 
         div = document.createElement("div");
@@ -44,12 +46,20 @@
         th.setAttribute("class", "td");
         th.innerHTML = null;
         tr.appendChild(th);
-        for (x in ss1["西安"]) {
+        if (querytype === '审批平台退库') {
+            for (x in ss1["工业"]) {
             th = document.createElement("th");
             th.setAttribute("class", "td");
             th.innerHTML = x;
-            tr.appendChild(th);
+            tr.appendChild(th);}
+        } else  {
+            for (x in ss1["西安"]) {
+            th = document.createElement("th");
+            th.setAttribute("class", "td");
+            th.innerHTML = x;
+            tr.appendChild(th);}
         }
+
         tbody.appendChild(tr);
 
         for (x in ss1) {
@@ -85,12 +95,18 @@
         for (x in ss) {
             yuefen.push(x);
         }
-
+        if (querytype === 'LW') {
+            querytype = '联网直报平台存量';
+        } else if (querytype === 'SP') {
+            querytype = '审批平台增量';
+        } else if (querytype === 'TK') {
+            querytype = '审批平台退库';
+        }
         div = document.createElement("div");
         div.setAttribute("class", "container");
         hr = document.createElement("hr");
         hr.setAttribute("class", "hr");
-        div.appendChild(hr)
+        div.appendChild(hr);
         document.body.appendChild(div);
 
         div = document.createElement("div");
@@ -108,12 +124,20 @@
         tbody.appendChild(tr);
 
         {#ss是:{"02月":"西安": {"工业": 1503,... "总计": 8486},"铜川": {"工业": 219,...},"03月":"..."}#}
-        for (x in ss[yuefen[0]]["西安"]) {
+        if (querytype === '审批平台退库') {
+            for (x in ss[yuefen[0]]["工业"]) {
             th = document.createElement("th");
             th.setAttribute("class", "td");
             th.innerHTML = x;
-            tr.appendChild(th);
+            tr.appendChild(th);}
+        } else  {
+            for (x in ss[yuefen[0]]["西安"]) {
+            th = document.createElement("th");
+            th.setAttribute("class", "td");
+            th.innerHTML = x;
+            tr.appendChild(th);}
         }
+
         tbody.appendChild(tr);
         {#x是西铜宝咸渭...#}
         for (x in ss[yuefen[0]]) {
@@ -159,7 +183,7 @@
         div.setAttribute("class", "container");
         hr = document.createElement("hr");
         hr.setAttribute("class", "hr");
-        div.appendChild(hr)
+        div.appendChild(hr);
         document.body.appendChild(div);
     }
 
@@ -170,6 +194,8 @@
             querytype = '联网直报平台存量';
         } else if (querytype === 'SP') {
             querytype = '审批平台增量';
+        } else if (querytype === 'TK') {
+            querytype = '审批平台退库';
         }
 
         div = document.createElement("div");
@@ -183,12 +209,20 @@
         th.innerHTML = null;
         tr.appendChild(th);
         {#ss1是:{"西安": {"工业": 1503,... "总计": 8486}"铜川": {"工业": 219,...}#}
-        for (x in ss1["西安"]) {
+        if (querytype === '审批平台退库') {
+            for (x in ss1["工业"]) {
             th = document.createElement("th");
             th.setAttribute("class", "td");
             th.innerHTML = x;
-            tr.appendChild(th);
+            tr.appendChild(th);}
+        } else  {
+            for (x in ss1["西安"]) {
+            th = document.createElement("th");
+            th.setAttribute("class", "td");
+            th.innerHTML = x;
+            tr.appendChild(th);}
         }
+
         {#tr是：表格第一行，工业，建筑业等等#}
         tbody.appendChild(tr);
 
@@ -245,7 +279,7 @@
         div.setAttribute("class", "container");
         hr = document.createElement("hr");
         hr.setAttribute("class", "hr");
-        div.appendChild(hr)
+        div.appendChild(hr);
         document.body.appendChild(div);
 
 
@@ -324,7 +358,7 @@
     {#for (x in ss_all_lastyear) {create_one_table(ss_all_lastyear[x], querytype, x, (parseInt({{year_select}}) - 1).toString())}#}
 
     {#显示出总和数#}
-    if (querytype==='SP'){create_sum_table(ss_all,{{year_select}});}
+    if (querytype==='SP' || querytype==='TK'){create_sum_table(ss_all,{{year_select}});}
     {#document.write(ss_all_december_lastyear["12月"]);#}
     {#document.write(ss_all);#}
     {#document.write('SSSSSSSSS');#}

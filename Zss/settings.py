@@ -21,6 +21,8 @@ class Config:
     DEBUG = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = "darkness"
+    FLASK_ENV = "production"
+
 
 
 class DevelopConfig(Config):
@@ -46,10 +48,23 @@ class DevelopConfig(Config):
         "ODBCNAME": "ODBC+Driver+13+for+SQL+Server"
     }
 
+    bind_tk_info = {
+        "ENGINE": "mssql",
+        "DRIVER": "pyodbc",
+        "USER": "sa",
+        "PASSWORD": "zss11111111",
+        "HOST": "localhost",
+        "PORT": "58651",
+        "DBNAME": "审批平台退出单位数据库",
+        "ODBCNAME": "ODBC+Driver+13+for+SQL+Server"
+    }
+
     SQLALCHEMY_DATABASE_URI = get_db_uri(dbinfo)
     SQLALCHEMY_BINDS = {
-        'zss': get_db_uri(bindinfo)
+        'zss': get_db_uri(bindinfo),
+        'tk': get_db_uri(bind_tk_info)
     }
+    # SQLALCHEMY_ECHO = True   #是否输出orm查询的sql原生语句
 
 
 class TestConfig(Config):
