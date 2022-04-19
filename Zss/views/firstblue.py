@@ -174,6 +174,7 @@ cityinfo_SP = {
 specinfo = {
     "工业": ["B"],
     "建筑业": ["C"],
+    "贸易": ["E", "S"],
     "批发零售业": ["E"],
     "住宿餐饮业": ["S"],
     "房地产": ["X"],
@@ -186,6 +187,7 @@ specinfo = {
 specinfo_SP = {
     "工业": ["1"],
     "建筑业": ["2"],
+    "贸易": ["3", "4", "5", "6"],
     "批发业": ["3"],
     "零售业": ["4"],
     "住宿业": ["5"],
@@ -225,13 +227,14 @@ zhulaninfo_TK = {
     "农林牧渔业": ["01", "02", "03", "04", "05"],
     "采矿业": ["06", "07", "08", "09", "10", "11", "12"],
     "制造业": ["1300", "4399"],
-    "医药制造业": highTechManu_yyzzy,
-    "航空航天器及设备制造业": highTechManu_hkhtzzy,
-    "电子及通信设备制造业": highTechManu_dztxzzy,
-    "计算机及办公设备制造业": highTechManu_jsjbgzzy,
-    "医疗仪器设备及仪器仪表制造业": highTechManu_ylyqybzzy,
-    "信息化学品制造业": highTechManu_xxhxpzzy,
-    "高技术制造业":highTechManu,
+    "高技术制造业": highTechManu,
+    "高技术医药制造业": highTechManu_yyzzy,
+    "高技术航空航天器及设备制造业": highTechManu_hkhtzzy,
+    "高技术电子及通信设备制造业": highTechManu_dztxzzy,
+    "高技术计算机及办公设备制造业": highTechManu_jsjbgzzy,
+    "高技术医疗仪器设备及仪器仪表制造业": highTechManu_ylyqybzzy,
+    "高技术信息化学品制造业": highTechManu_xxhxpzzy,
+
     # 添加新值后需要改动query_type == 'TK'下的代码，指定查询方式
 }
 
@@ -277,8 +280,8 @@ def query_year_month(t_C, query_type, cityinfo, specinfo):
                     for k in range(1, len(cityinfo[i])):
                         count_temp_haha = count_temp_haha.union_all(
                             t_C.query.filter(t_C.行业代码_17.startswith(cityinfo[i][k])))
-            elif i in ["高技术制造业","医药制造业","航空航天器及设备制造业","电子及通信设备制造业",
-                       "计算机及办公设备制造业","医疗仪器设备及仪器仪表制造业","信息化学品制造业"]:
+            elif i in ["高技术制造业","高技术医药制造业","高技术航空航天器及设备制造业","高技术电子及通信设备制造业",
+                       "高技术计算机及办公设备制造业","高技术医疗仪器设备及仪器仪表制造业","高技术信息化学品制造业"]:
                 count_temp_haha = t_C.query.filter(t_C.行业代码_17.in_(cityinfo[i]))
             elif i in ["制造业"]:
                 count_temp_haha = t_C.query.filter(t_C.行业代码_17.between(cityinfo[i][0],cityinfo[i][1]))
