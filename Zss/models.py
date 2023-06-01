@@ -1,7 +1,7 @@
 from Zss.extensions import db
 #  db的来源是from flask_sqlalchemy import SQLAlchemy  #db = SQLAlchemy()
 
-year = ["2013", "2014", "2015", "2016","2017", "2018", "2019", "2020","2021","2022"]
+year = ["2013", "2014", "2015", "2016","2017", "2018", "2019", "2020","2021","2022","2023"]
 month = ["02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
 query_type = ["LW", "SP","TK"]
 query_type1 = ["SP_YEAR","TK_YEAR"]
